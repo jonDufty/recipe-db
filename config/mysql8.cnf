@@ -1,0 +1,18 @@
+[mysqld]
+
+# Saves about 400MB of ram
+performance_schema = 0
+
+# Saves about 100MB of RAM
+innodb_buffer_pool_size = 16M
+
+# Use 4-Byte UTF-8 Unicode encoding for maximum compatibility
+character_set_server = utf8mb4
+collation_server = utf8mb4_unicode_520_ci
+
+# Set sql_mode to "strict mode" defaults used for MySQL 8 to reduce confusion about what modes are to be used
+sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'
+
+# Use MySQL native passwords as the default authentication plugin (required for Sequel PRO)
+default-authentication-plugin = mysql_native_password
+
