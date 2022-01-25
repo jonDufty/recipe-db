@@ -20,9 +20,20 @@ func main() {
 			Action: cmd.InitDB,
 		},
 		{
-			Name:   "migrate",
-			Usage:  "Run database migrations",
-			Action: cmd.Migrate,
+			Name:  "migrate",
+			Usage: "Run database migrations",
+			Subcommands: []*cli.Command{
+				{
+					Name:   "up",
+					Usage:  "Migrate up",
+					Action: cmd.MigrateUp,
+				},
+				{
+					Name:   "down",
+					Usage:  "Migrate down",
+					Action: cmd.MigrateDown,
+				},
+			},
 		},
 	}
 
