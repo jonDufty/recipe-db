@@ -15,7 +15,7 @@ import (
 func MigrateUp(ctx *cli.Context) error {
 	fmt.Println("Migrating up ...")
 
-	url := fmt.Sprintf("mysql://root@tcp(127.0.0.1:45000)/recipedb")
+	url := fmt.Sprint("mysql://root@tcp(127.0.0.1:45000)/recipedb")
 
 	handler, err := ConnectDB(url)
 	if err != nil {

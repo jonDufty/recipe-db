@@ -41,9 +41,12 @@ func LoadConfig(baseDir string, envPrefix string, config interface{}) error {
 		return errors.New("Error loading config file." + err.Error())
 	}
 
-	godotenv.Load(configPath)
+	err := godotenv.Load(configPath)
+	if err != nil {
+		return err
+	}
 
-	err := envconfig.Process(envPrefix, config)
+	err = envconfig.Process(envPrefix, config)
 	if err != nil {
 		return err
 	}
