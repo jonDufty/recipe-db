@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package recipes.auth;
+package recipes;
 
-option go_package = "./authpb";
+option go_package = "auth/rpc/authpb";
 
 // Auth is a service for all user authentication
 service Auth {

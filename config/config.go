@@ -18,7 +18,7 @@ type AppConfig struct {
 }
 
 type AuthConfig struct {
-	Test string
+	Port int
 	AppConfig
 }
 
