@@ -11,6 +11,12 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
       MYSQL_ROOT_HOST: '%'
+
+  auth:
+    image: recipes:test
+    ports:
+      - "9000:80"
+    command: serve auth
       
 
 volumes:
