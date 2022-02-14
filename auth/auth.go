@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jonDufty/recipes/auth/routes"
 	"github.com/jonDufty/recipes/config"
 	"github.com/urfave/cli/v2"
 )
@@ -26,7 +25,7 @@ func ServeHandler(context *cli.Context) error {
 	log.Printf("Listening on %s", bindAddr)
 	server := http.Server{
 		Addr:         bindAddr,
-		Handler:      routes.NewRouter(),
+		Handler:      NewRouter(&app),
 		IdleTimeout:  20 * time.Second,
 		ReadTimeout:  20 * time.Second,
 		WriteTimeout: 20 * time.Second,

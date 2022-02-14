@@ -25,6 +25,11 @@ type AuthConfig struct {
 func NewAuthConfig() *AuthConfig {
 	config := &AuthConfig{}
 	baseDir := os.Getenv("BASE_DIR")
+
+	if baseDir == "" {
+		baseDir = "/Users/jondufty/Projects/99designs/recipe-db"
+	}
+
 	err := LoadConfig(baseDir, "auth", config)
 	if err != nil {
 		log.Fatal(err)
