@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/db-journey/migrate/v2 v2.1.1
 	github.com/db-journey/mysql-driver v1.0.1
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/oklog/ulid/v2 v2.0.2

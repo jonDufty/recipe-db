@@ -16,6 +16,8 @@ github.com/db-journey/mysql-driver v1.0.1 h1:XOoE8NTWl7Wc0iYl2A1f90cV3CK5LYGa/9e
 github.com/db-journey/mysql-driver v1.0.1/go.mod h1:wNNENzkYd7c2OA6EcKR0XiU7S4IuHm7mTcOsdSi3BTQ=
 github.com/db-journey/postgresql-driver v0.0.0-20190914135041-b502d4210454/go.mod h1:AP+PCklq/+0BGQCHEMCHptAKB/r7wDgPIySiXUJcdC0=
 github.com/db-journey/sqlite3-driver v0.0.0-20190914135101-61d2f23fe986/go.mod h1:oAgZvQ7a7W1PbSiwN+nU0CsChB4ciAsVmYVeVrfie8w=
+github.com/go-chi/chi/v5 v5.0.7 h1:rDTPXLDHGATaeHvVlLcR4Qe0zftYethFucbjVQ1PxU8=
+github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/gocql/gocql v0.0.0-20190910075112-d63913db787c h1:c8axRoOul5Nf80UpwiLUiEC0s0fW4KFi4V7jYNdi/wQ=

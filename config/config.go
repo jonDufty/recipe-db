@@ -22,7 +22,7 @@ type AuthConfig struct {
 	AppConfig
 }
 
-func (c AuthConfig) LoadConfig() *AuthConfig {
+func NewAuthConfig() *AuthConfig {
 	config := &AuthConfig{}
 	baseDir := os.Getenv("BASE_DIR")
 	err := LoadConfig(baseDir, "auth", config)

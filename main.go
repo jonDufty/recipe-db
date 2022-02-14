@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/jonDufty/recipes/auth"
 	"github.com/jonDufty/recipes/cmd"
 	"github.com/urfave/cli/v2"
 )
@@ -32,6 +33,17 @@ func main() {
 					Name:   "down",
 					Usage:  "Migrate down",
 					Action: cmd.MigrateDown,
+				},
+			},
+		},
+		{
+			Name:  "serve",
+			Usage: "Start app server",
+			Subcommands: []*cli.Command{
+				{
+					Name:   "auth",
+					Usage:  "Start auth microservice",
+					Action: auth.ServeHandler,
 				},
 			},
 		},
