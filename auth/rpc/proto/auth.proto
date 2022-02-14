@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package recipes.auth;
+
+option go_package = "./authpb";
+
+// Auth is a service for all user authentication
+service Auth {
+    rpc SayHello(SayHelloRequest) returns (SayHelloResponse);    
+}
+
+// SayHello says hello...obviously
+message SayHelloRequest {
+    // `name` is who you would like to greet
+    string name = 1;
+}
+
+// Just a friendly greeting
+message SayHelloResponse {
+    // `greeting` is the returned greeting
+    string greeting = 1;
+}
