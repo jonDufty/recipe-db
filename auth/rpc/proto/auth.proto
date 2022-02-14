@@ -1,12 +1,30 @@
 syntax = "proto3";
 
 package recipes;
-
 option go_package = "auth/rpc/authpb";
+
+import "google/protobuf/timestamp.proto";
 
 // Auth is a service for all user authentication
 service Auth {
-    rpc SayHello(SayHelloRequest) returns (SayHelloResponse);    
+    rpc SayHello(SayHelloRequest) returns (SayHelloResponse);
+    rpc GetUserById(ByIdRequest) returns (User);
+    rpc GetUserByEmail(ByEmailRequest) returns (User);
+}
+
+message User {
+    int64 user_id = 1;
+    string full_name = 2;
+    string email = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message ByIdRequest {
+    int64 user_id = 1; //user id of the user
+}
+
+message ByEmailRequest {
+    string email = 1; // email of the user
 }
 
 // SayHello says hello...obviously

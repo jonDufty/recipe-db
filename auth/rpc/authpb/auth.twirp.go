@@ -35,6 +35,10 @@ const _ = twirp.TwirpPackageMinVersion_8_1_0
 // Auth is a service for all user authentication
 type Auth interface {
 	SayHello(context.Context, *SayHelloRequest) (*SayHelloResponse, error)
+
+	GetUserById(context.Context, *ByIdRequest) (*User, error)
+
+	GetUserByEmail(context.Context, *ByEmailRequest) (*User, error)
 }
 
 // ====================
@@ -43,7 +47,7 @@ type Auth interface {
 
 type authProtobufClient struct {
 	client      HTTPClient
-	urls        [1]string
+	urls        [3]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -71,8 +75,10 @@ func NewAuthProtobufClient(baseURL string, client HTTPClient, opts ...twirp.Clie
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(pathPrefix, "recipes", "Auth")
-	urls := [1]string{
+	urls := [3]string{
 		serviceURL + "SayHello",
+		serviceURL + "GetUserById",
+		serviceURL + "GetUserByEmail",
 	}
 
 	return &authProtobufClient{
@@ -129,13 +135,105 @@ func (c *authProtobufClient) callSayHello(ctx context.Context, in *SayHelloReque
 	return out, nil
 }
 
+func (c *authProtobufClient) GetUserById(ctx context.Context, in *ByIdRequest) (*User, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "recipes")
+	ctx = ctxsetters.WithServiceName(ctx, "Auth")
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserById")
+	caller := c.callGetUserById
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *ByIdRequest) (*User, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByIdRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByIdRequest) when calling interceptor")
+					}
+					return c.callGetUserById(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *authProtobufClient) callGetUserById(ctx context.Context, in *ByIdRequest) (*User, error) {
+	out := new(User)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authProtobufClient) GetUserByEmail(ctx context.Context, in *ByEmailRequest) (*User, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "recipes")
+	ctx = ctxsetters.WithServiceName(ctx, "Auth")
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserByEmail")
+	caller := c.callGetUserByEmail
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *ByEmailRequest) (*User, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByEmailRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByEmailRequest) when calling interceptor")
+					}
+					return c.callGetUserByEmail(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *authProtobufClient) callGetUserByEmail(ctx context.Context, in *ByEmailRequest) (*User, error) {
+	out := new(User)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 // ================
 // Auth JSON Client
 // ================
 
 type authJSONClient struct {
 	client      HTTPClient
-	urls        [1]string
+	urls        [3]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -163,8 +261,10 @@ func NewAuthJSONClient(baseURL string, client HTTPClient, opts ...twirp.ClientOp
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(pathPrefix, "recipes", "Auth")
-	urls := [1]string{
+	urls := [3]string{
 		serviceURL + "SayHello",
+		serviceURL + "GetUserById",
+		serviceURL + "GetUserByEmail",
 	}
 
 	return &authJSONClient{
@@ -207,6 +307,98 @@ func (c *authJSONClient) SayHello(ctx context.Context, in *SayHelloRequest) (*Sa
 func (c *authJSONClient) callSayHello(ctx context.Context, in *SayHelloRequest) (*SayHelloResponse, error) {
 	out := new(SayHelloResponse)
 	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authJSONClient) GetUserById(ctx context.Context, in *ByIdRequest) (*User, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "recipes")
+	ctx = ctxsetters.WithServiceName(ctx, "Auth")
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserById")
+	caller := c.callGetUserById
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *ByIdRequest) (*User, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByIdRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByIdRequest) when calling interceptor")
+					}
+					return c.callGetUserById(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *authJSONClient) callGetUserById(ctx context.Context, in *ByIdRequest) (*User, error) {
+	out := new(User)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *authJSONClient) GetUserByEmail(ctx context.Context, in *ByEmailRequest) (*User, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "recipes")
+	ctx = ctxsetters.WithServiceName(ctx, "Auth")
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserByEmail")
+	caller := c.callGetUserByEmail
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *ByEmailRequest) (*User, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByEmailRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByEmailRequest) when calling interceptor")
+					}
+					return c.callGetUserByEmail(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *authJSONClient) callGetUserByEmail(ctx context.Context, in *ByEmailRequest) (*User, error) {
+	out := new(User)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -320,6 +512,12 @@ func (s *authServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	switch method {
 	case "SayHello":
 		s.serveSayHello(ctx, resp, req)
+		return
+	case "GetUserById":
+		s.serveGetUserById(ctx, resp, req)
+		return
+	case "GetUserByEmail":
+		s.serveGetUserByEmail(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -485,6 +683,366 @@ func (s *authServer) serveSayHelloProtobuf(ctx context.Context, resp http.Respon
 	}
 	if respContent == nil {
 		s.writeError(ctx, resp, twirp.InternalError("received a nil *SayHelloResponse and nil error while calling SayHello. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServer) serveGetUserById(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetUserByIdJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetUserByIdProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *authServer) serveGetUserByIdJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserById")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(ByIdRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.Auth.GetUserById
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *ByIdRequest) (*User, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByIdRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByIdRequest) when calling interceptor")
+					}
+					return s.Auth.GetUserById(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *User
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *User and nil error while calling GetUserById. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: !s.jsonCamelCase, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServer) serveGetUserByIdProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserById")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(ByIdRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.Auth.GetUserById
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *ByIdRequest) (*User, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByIdRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByIdRequest) when calling interceptor")
+					}
+					return s.Auth.GetUserById(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *User
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *User and nil error while calling GetUserById. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServer) serveGetUserByEmail(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetUserByEmailJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetUserByEmailProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *authServer) serveGetUserByEmailJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserByEmail")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(ByEmailRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.Auth.GetUserByEmail
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *ByEmailRequest) (*User, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByEmailRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByEmailRequest) when calling interceptor")
+					}
+					return s.Auth.GetUserByEmail(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *User
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *User and nil error while calling GetUserByEmail. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: !s.jsonCamelCase, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *authServer) serveGetUserByEmailProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetUserByEmail")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(ByEmailRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.Auth.GetUserByEmail
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *ByEmailRequest) (*User, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*ByEmailRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*ByEmailRequest) when calling interceptor")
+					}
+					return s.Auth.GetUserByEmail(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*User)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*User) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *User
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *User and nil error while calling GetUserByEmail. nil responses are not supported"))
 		return
 	}
 
@@ -1086,16 +1644,27 @@ func callClientError(ctx context.Context, h *twirp.ClientHooks, err twirp.Error)
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 162 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x4c, 0x2c, 0x2d, 0xc9,
-	0xd0, 0x2f, 0x2a, 0x48, 0xd6, 0x2f, 0x28, 0xca, 0x2f, 0xc9, 0xd7, 0x07, 0x71, 0xf5, 0xc0, 0x4c,
-	0x21, 0xf6, 0xa2, 0xd4, 0xe4, 0xcc, 0x82, 0xd4, 0x62, 0x25, 0x55, 0x2e, 0xfe, 0xe0, 0xc4, 0x4a,
-	0x8f, 0xd4, 0x9c, 0x9c, 0xfc, 0xa0, 0xd4, 0xc2, 0xd2, 0xd4, 0xe2, 0x12, 0x21, 0x21, 0x2e, 0x96,
-	0xbc, 0xc4, 0xdc, 0x54, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x30, 0x5b, 0x49, 0x8f, 0x4b,
-	0x00, 0xa1, 0xac, 0xb8, 0x20, 0x3f, 0xaf, 0x38, 0x55, 0x48, 0x8a, 0x8b, 0x23, 0xbd, 0x28, 0x35,
-	0xb5, 0x24, 0x33, 0x2f, 0x1d, 0xaa, 0x16, 0xce, 0x37, 0x72, 0xe7, 0x62, 0x71, 0x2c, 0x2d, 0xc9,
-	0x10, 0xb2, 0xe7, 0xe2, 0x80, 0xe9, 0x13, 0x92, 0xd0, 0x83, 0x5a, 0xaa, 0x87, 0x66, 0xa3, 0x94,
-	0x24, 0x16, 0x19, 0x88, 0x25, 0x4e, 0x82, 0x51, 0xfc, 0x70, 0x5f, 0x80, 0x18, 0x05, 0x49, 0x49,
-	0x6c, 0x60, 0x2f, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf8, 0xeb, 0xa1, 0x0a, 0xdf, 0x00,
-	0x00, 0x00,
+	// 349 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x92, 0xcf, 0x6e, 0xe2, 0x30,
+	0x10, 0xc6, 0xe5, 0x25, 0xcb, 0x9f, 0x41, 0x0b, 0xbb, 0x16, 0x12, 0x21, 0x7b, 0x28, 0x8a, 0x54,
+	0xc4, 0xc9, 0x91, 0xe8, 0xa5, 0x3d, 0x55, 0x20, 0x55, 0x2d, 0x97, 0x1e, 0xd2, 0xf6, 0xd2, 0x0b,
+	0x32, 0x64, 0x08, 0x91, 0x12, 0x92, 0xda, 0xce, 0x81, 0x87, 0xe8, 0xe3, 0xf4, 0xfd, 0x2a, 0x3b,
+	0x7f, 0x1a, 0xa1, 0xf6, 0x36, 0x63, 0xff, 0x3e, 0xcd, 0xe7, 0x6f, 0x0c, 0x13, 0x9e, 0xab, 0x83,
+	0x27, 0xb2, 0x9d, 0x97, 0x89, 0x54, 0xa5, 0x9e, 0x6e, 0x99, 0x29, 0x69, 0x47, 0xe0, 0x2e, 0xca,
+	0x50, 0x3a, 0x17, 0x61, 0x9a, 0x86, 0x31, 0x16, 0xc4, 0x36, 0xdf, 0x7b, 0x2a, 0x4a, 0x50, 0x2a,
+	0x9e, 0x64, 0x05, 0xe9, 0xbe, 0x13, 0xb0, 0x5e, 0x24, 0x0a, 0x3a, 0x86, 0x4e, 0x2e, 0x51, 0x6c,
+	0xa2, 0xc0, 0x26, 0x53, 0x32, 0x6f, 0xf9, 0x6d, 0xdd, 0xae, 0x03, 0xfa, 0x1f, 0x7a, 0xfb, 0x3c,
+	0x8e, 0x37, 0x47, 0x9e, 0xa0, 0xfd, 0x6b, 0x4a, 0xe6, 0x3d, 0xbf, 0xab, 0x0f, 0x1e, 0x79, 0x82,
+	0x74, 0x04, 0xbf, 0x31, 0xe1, 0x51, 0x6c, 0xb7, 0xcc, 0x45, 0xd1, 0xd0, 0x1b, 0x80, 0x9d, 0x40,
+	0xae, 0x30, 0xd8, 0x70, 0x65, 0x5b, 0x53, 0x32, 0xef, 0x2f, 0x1c, 0x56, 0x58, 0x61, 0x95, 0x15,
+	0xf6, 0x5c, 0x59, 0xf1, 0x7b, 0x25, 0xbd, 0x54, 0xee, 0x0c, 0xfa, 0xab, 0xd3, 0x3a, 0xf0, 0xf1,
+	0x2d, 0x47, 0xa9, 0x7e, 0x74, 0xe5, 0xce, 0x60, 0xb0, 0x3a, 0xdd, 0xe9, 0x69, 0x15, 0x5a, 0x5b,
+	0x21, 0x0d, 0x2b, 0xee, 0x25, 0x0c, 0x9f, 0xf8, 0xe9, 0x01, 0xe3, 0x38, 0xad, 0x40, 0x0a, 0x96,
+	0x79, 0x4b, 0xc1, 0x99, 0xda, 0x65, 0xf0, 0xf7, 0x0b, 0x93, 0x59, 0x7a, 0x94, 0x48, 0x1d, 0xe8,
+	0x86, 0x02, 0x51, 0x45, 0xc7, 0xb0, 0x64, 0xeb, 0x7e, 0xf1, 0x41, 0xc0, 0x5a, 0xe6, 0xea, 0x40,
+	0x6f, 0xa1, 0x5b, 0x09, 0xa9, 0xcd, 0xca, 0xd8, 0xd9, 0xd9, 0x48, 0x67, 0xf2, 0xcd, 0x4d, 0x39,
+	0x65, 0x01, 0xfd, 0x7b, 0x54, 0x7a, 0x05, 0xfa, 0xdd, 0x74, 0x54, 0x93, 0x8d, 0x18, 0x9c, 0x3f,
+	0xf5, 0xa9, 0xd9, 0xd5, 0x35, 0x0c, 0x6a, 0x8d, 0xc9, 0x80, 0x8e, 0x1b, 0xb2, 0x66, 0x2a, 0x67,
+	0xca, 0xd5, 0xbf, 0xd7, 0x61, 0xfd, 0x6b, 0x74, 0x91, 0x6d, 0xb7, 0x6d, 0xb3, 0x90, 0xab, 0xcf,
+	0x00, 0x00, 0x00, 0xff, 0xff, 0x21, 0xbd, 0x9a, 0x87, 0x4f, 0x02, 0x00, 0x00,
 }
