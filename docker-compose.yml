@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql/mysql-server:8.0
+    ports:
+      - 45000:3306/tcp
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./config/mysql8.cnf:/etc/mysql/conf.d/recipedb.cnf:ro"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_ROOT_HOST: '%'
+      
+
+volumes:
+  mysql-data: {}

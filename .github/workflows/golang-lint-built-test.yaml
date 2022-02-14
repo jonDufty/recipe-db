@@ -6,22 +6,26 @@ on:
 
 jobs:
   # Linting
-  lint-and-test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v2
+      with:
+        args: -D gosimple
+
+    - name: run tests
+      run: echo "Run tests here..."
+  
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v2
       with: 
         go-version: '1.17'
-    - name: install golint
-      run: |
-        go version
-        go get -u golang.org/x/lint/golint
-    - name: run golint
-      run: golint .
-    - name: run tests
-      run: echo "Run tests here..."
-    
+  
   # Build
   build:
     runs-on: ubuntu-latest
