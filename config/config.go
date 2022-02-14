@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -27,7 +26,7 @@ func NewAuthConfig() *AuthConfig {
 	baseDir := os.Getenv("BASE_DIR")
 
 	if baseDir == "" {
-		baseDir = "/Users/jondufty/Projects/99designs/recipe-db"
+		baseDir = "."
 	}
 
 	err := LoadConfig(baseDir, "auth", config)
@@ -43,7 +42,8 @@ func LoadConfig(baseDir string, envPrefix string, config interface{}) error {
 	fmt.Printf("Loading .env file %s\n", configPath)
 
 	if _, err := os.Stat(configPath); err != nil {
-		return errors.New("Error loading config file." + err.Error())
+		log.Println("No .env file found. Using environment instead")
+		return nil
 	}
 
 	err := godotenv.Load(configPath)
