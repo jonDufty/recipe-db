@@ -16,8 +16,10 @@ services:
     image: recipes:test
     ports:
       - "9000:80"
-    entrypoint: ior listen 
     command: serve auth
+
+  # migrate:
+  #   image:
       
 
 volumes:

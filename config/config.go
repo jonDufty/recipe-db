@@ -8,12 +8,15 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+
+	"github.com/jonDufty/recipes/common/database"
 )
 
 type AppConfig struct {
-	AuthEndpoint    string `envconfig:"auth_endpoint"`
-	GraphEndpoint   string `envconfig:"graph_endpoint"`
-	RecipesEndpoint string `envconfig:"recipes_endpoint"`
+	AuthEndpoint    string           `envconfig:"auth_endpoint"`
+	GraphEndpoint   string           `envconfig:"graph_endpoint"`
+	RecipesEndpoint string           `envconfig:"recipes_endpoint"`
+	DB              *database.Config `envconfig:"database"`
 }
 
 type AuthConfig struct {
@@ -29,10 +32,15 @@ func NewAuthConfig() *AuthConfig {
 		baseDir = "."
 	}
 
+	if err := LoadConfig(baseDir, "recipes", config); err != nil {
+		log.Fatal(err)
+	}
+
 	err := LoadConfig(baseDir, "auth", config)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return config
 }
 

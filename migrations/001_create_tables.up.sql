@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `password_hash` varchar(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
 CREATE TABLE IF NOT EXISTS`session` (
     `id` VARCHAR(255) NOT NULL,
     `user_id` int NOT NULL,
