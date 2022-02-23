@@ -1,0 +1,18 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 45000,
+            "driver": "MySQL",
+            "name": "recipedb-auth",
+            "group": "recipedb",
+            "database": "recipedb",
+            "username": "root",
+            "password": ""
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -15,22 +16,23 @@ import (
 
 type App struct {
 	Config *config.AuthConfig
+	Ctx    context.Context
 	DB     *sql.DB
 }
 
-func ServeHandler(context *cli.Context) error {
-	c := config.NewAuthConfig()
+func ServeHandler(c *cli.Context) error {
+	cfg := config.NewAuthConfig()
 
 	// connect to database
-	db, err := database.Connect(*c.DB)
+	db, err := database.Connect(*cfg.DB)
 	if err != nil {
 		return errors.New("Could not connect to DB: " + err.Error())
 	}
 
-	fmt.Printf("Connected to DB at %s\n", c.DB.Address)
+	fmt.Printf("Connected to DB at %s\n", cfg.DB.Address)
 
 	app := App{
-		Config: c,
+		Config: cfg,
 		DB:     db,
 	}
 

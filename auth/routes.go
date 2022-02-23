@@ -10,6 +10,7 @@ import (
 
 	"github.com/jonDufty/recipes/auth/models"
 	"github.com/jonDufty/recipes/common/crypto"
+	db "github.com/jonDufty/recipes/common/database"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -29,6 +30,7 @@ func NewRouter(a *App) http.Handler {
 
 	// Add common middleware
 	r.Use(middleware.Logger)
+	r.Use(db.Middleware(a.DB))
 
 	r.Get("/system/healthcheck", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "🔐")
