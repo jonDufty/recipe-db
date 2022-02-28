@@ -18,9 +18,25 @@ services:
       - "9000:80"
     command: serve auth
 
-  # migrate:
-  #   image:
+  auth-dev:
+    build: ops/develop
+    volumes:
+      - .:/recipes:delegated
+      - gopkg:/go/pkg/mod
+    ports:
+      - "9000:80/tcp"
+      - "9100:40000/tcp"
+    cap_add:
+      - SYS_PTRACE
+    command: ops/develop/startup.sh serve auth
+
+  recipes:
+    image: recipes:test
+    depends_on:
+      - mysql
+    
       
 
 volumes:
   mysql-data: {}
+  gopkg:

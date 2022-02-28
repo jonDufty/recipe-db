@@ -13,13 +13,13 @@
             "args": ["serve","auth"]
         },
         {
-            "name": "Debug",
+            "name": "Debug (Docker)",
             "type": "go",
             "request": "attach",
             "mode": "remote",
-            "remotePath": "/messages",
-            "port": 48935,
-            "host": "localhost"
+            "remotePath": "/recipes",
+            "port": 9100,
+            "host": "127.0.0.1"
         }
 
     ]
