@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,22 +18,24 @@ type Config struct {
 	Name    string `envconfig:"name"`
 }
 
-const DBKey = "database"
+type DBkey string
+
+const dBKey DBkey = "database"
 
 func Get(ctx context.Context) (meddler.DB, error) {
-	if db, ok := ctx.Value(DBKey).(meddler.DB); ok {
+	if db, ok := ctx.Value(dBKey).(meddler.DB); ok {
 		return db, nil
 	}
 	return nil, errors.New("DB not in context")
 }
 
 func dbContext(ctx context.Context, db meddler.DB) context.Context {
-	return context.WithValue(ctx, DBKey, db)
+	return context.WithValue(ctx, dBKey, db)
 }
 
 // Connect to database
 func Connect(c Config) (*sql.DB, error) {
-	dsn := c.Address + c.Name
+	dsn := c.Address + c.Name + "?parseTime=true"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
@@ -57,16 +60,45 @@ func Middleware(db meddler.DB) func(handler http.Handler) http.Handler {
 	}
 }
 
-// Insert
-func Insert(ctx context.Context, table string, src interface{}) error {
+func StartTx(ctx context.Context) (*sql.Tx, error) {
 	db, err := Get(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tx, err := db.(*sql.DB).BeginTx(ctx, &sql.TxOptions{})
 	if err != nil {
-		return nil
+		return nil, err
+	}
+
+	return tx, nil
+}
+
+// Insert
+func Insert(ctx context.Context, table string, src interface{}) error {
+
+	tx, err := StartTx(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = meddler.Insert(tx, table, src)
+	if err != nil {
+		tx.Rollback()
+		log.Print(err)
+		return err
+	} else {
+		err = tx.Commit()
+	}
+
+	return err
+}
+
+// Update
+func Update(ctx context.Context, table string, src interface{}) error {
+	tx, err := StartTx(ctx)
+	if err != nil {
+		return err
 	}
 
 	err = meddler.Insert(tx, table, src)
@@ -80,10 +112,8 @@ func Insert(ctx context.Context, table string, src interface{}) error {
 	return err
 }
 
-// Update
-
 // Query
 
-// Get
+// Get - Users meddler.QueryRow to get a single row result
 
 // Close

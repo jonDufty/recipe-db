@@ -3,12 +3,15 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	authpb "github.com/jonDufty/recipes/auth/rpc/authpb"
 
-	"github.com/jonDufty/recipes/auth/models"
+	"github.com/jonDufty/recipes/auth/models/session"
+	"github.com/jonDufty/recipes/auth/models/user"
+
 	"github.com/jonDufty/recipes/common/crypto"
 	db "github.com/jonDufty/recipes/common/database"
 
@@ -19,7 +22,7 @@ import (
 type AuthPostParams struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	FullName string `json:"full_name"`
+	FullName string `json:"full_name,omitempty"`
 }
 
 // Returns chi router with common middleware applied
@@ -43,6 +46,13 @@ func NewRouter(a *App) http.Handler {
 		r.Post("/login", login)
 		r.Post("/register", register)
 
+	})
+
+	// Test authenticated endpoints
+	r.Group(func(r chi.Router) {
+		r.Use(session.Middleware())
+
+		r.Get("/check", check)
 	})
 
 	// Add twirp routes
@@ -72,6 +82,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	d, err := getPostParams(r)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
 	}
 
 	hash, err := crypto.HashPassword(d.Password)
@@ -79,19 +90,65 @@ func register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 	}
 
-	requestUser := &models.User{
+	requestUser := &user.User{
 		FullName:     d.FullName,
 		Email:        d.Email,
 		TimeCreated:  time.Now(),
 		PasswordHash: hash,
 	}
 
-	fmt.Print(d)
-	fmt.Printf("%v", *requestUser)
-	w.Write([]byte("Hello there"))
+	err = requestUser.InsertUser(r.Context())
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		log.Printf("Error inserting user into db: %v", requestUser)
+	}
+	log.Print("User created successfully")
 
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello there"))
+
+	d, err := getPostParams(r)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		log.Print(err.Error())
+		return
+	}
+
+	u, err := user.GetUserByEmail(r.Context(), d.Email)
+	if err != nil {
+		http.Error(w, "Incorrect email or password", http.StatusBadRequest)
+		log.Printf("User of email: %s not found", d.Email)
+		log.Print(err.Error())
+		return
+	}
+
+	err = crypto.CheckPassword(d.Password, u.PasswordHash)
+	if err != nil {
+		http.Error(w, "Incorrect email or password", http.StatusBadRequest)
+		log.Printf("Password for email: %s does not match hash\nExpected: %s\n Received %s", d.Email, u.PasswordHash, d.Password)
+		log.Print(err.Error())
+		return
+	}
+
+	err = session.CreateSession(w, r, u)
+	if err != nil {
+		http.Error(w, "Error creating session", http.StatusBadRequest)
+		return
+	}
+
+	http.Redirect(w, r, "/system/healthcheck", http.StatusOK)
+}
+
+func check(w http.ResponseWriter, r *http.Request) {
+	err := session.CheckCookie(w, r)
+
+	if err != nil {
+		w.Write([]byte("You are not logged in..."))
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	w.Write([]byte("You are logged in"))
+	w.WriteHeader(http.StatusOK)
 }

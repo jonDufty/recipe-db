@@ -20,7 +20,7 @@ type AppConfig struct {
 }
 
 type AuthConfig struct {
-	Port int
+	Port int `envconfig:"port" default:"80"`
 	AppConfig
 }
 
