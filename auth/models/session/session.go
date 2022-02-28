@@ -5,15 +5,12 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/99designs/go/stringutil"
+	"github.com/google/uuid"
 	"github.com/jonDufty/recipes/auth/models/user"
 	"github.com/jonDufty/recipes/common/database"
 	"github.com/russross/meddler"
-
-	"github.com/oklog/ulid/v2"
 )
 
 const SESSION_AUTH_LIFETIME time.Duration = time.Minute * 15
@@ -29,7 +26,8 @@ type Session struct {
 
 func CreateSession(w http.ResponseWriter, r *http.Request, u *user.User) error {
 
-	id := ulid.MustNew(1234, strings.NewReader(stringutil.Random(20)))
+	// id := ulid.MustNew(1234, strings.NewReader(stringutil.Random(20)))
+	id := uuid.New()
 
 	cookie := &http.Cookie{
 		Name:    COOKIE_NAME,

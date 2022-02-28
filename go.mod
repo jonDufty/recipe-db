@@ -3,14 +3,13 @@ module github.com/jonDufty/recipes
 go 1.17
 
 require (
-	github.com/99designs/go v0.0.0-20220110003429-c7e32b70b824
 	github.com/db-journey/migrate/v2 v2.1.1
 	github.com/db-journey/mysql-driver v1.0.1
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/oklog/ulid/v2 v2.0.2
 	github.com/russross/meddler v1.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/twitchtv/twirp v8.1.1+incompatible
@@ -26,5 +25,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
