@@ -109,11 +109,11 @@ func getUserFromSession(ctx context.Context, sid string) (*Session, error) {
 	s := &Session{}
 	err = meddler.QueryRow(tx, s, "SELECT * FROM session WHERE id = ?", sid)
 	if err != nil {
-		tx.Rollback()
-		return nil, errors.New("Cannot find session. " + err.Error())
+		e := tx.Rollback()
+		return nil, errors.New("Cannot find session. " + err.Error() + e.Error())
 	} else {
-		tx.Commit()
+		err = tx.Commit()
 	}
 
-	return s, nil
+	return s, err
 }

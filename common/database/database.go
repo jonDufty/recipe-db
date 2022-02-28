@@ -84,9 +84,9 @@ func Insert(ctx context.Context, table string, src interface{}) error {
 
 	err = meddler.Insert(tx, table, src)
 	if err != nil {
-		tx.Rollback()
+		e := tx.Rollback()
 		log.Print(err)
-		return err
+		return errors.New(err.Error() + e.Error())
 	} else {
 		err = tx.Commit()
 	}
@@ -103,8 +103,8 @@ func Update(ctx context.Context, table string, src interface{}) error {
 
 	err = meddler.Insert(tx, table, src)
 	if err != nil {
-		tx.Rollback()
-		return err
+		e := tx.Rollback()
+		return errors.New(e.Error() + e.Error())
 	} else {
 		err = tx.Commit()
 	}

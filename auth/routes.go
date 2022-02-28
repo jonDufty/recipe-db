@@ -144,11 +144,11 @@ func check(w http.ResponseWriter, r *http.Request) {
 	err := session.CheckCookie(w, r)
 
 	if err != nil {
-		w.Write([]byte("You are not logged in..."))
+		fmt.Fprintf(w, "You are not logged in...")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	w.Write([]byte("You are logged in"))
+	fmt.Fprintf(w, "You are logged in")
 	w.WriteHeader(http.StatusOK)
 }

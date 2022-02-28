@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/jonDufty/recipes/common/database"
@@ -40,8 +41,8 @@ func GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	u := &User{}
 	err = meddler.QueryRow(tx, u, "SELECT * from user WHERE email = ?", email)
 	if err != nil {
-		tx.Rollback()
-		return nil, err
+		e := tx.Rollback()
+		return nil, errors.New(e.Error() + e.Error())
 	} else {
 		err = tx.Commit()
 	}
