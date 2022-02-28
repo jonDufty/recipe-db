@@ -59,7 +59,7 @@ func TestHttpRoutes(t *testing.T) {
 
 	t.Run("Check base route", func(t *testing.T) {
 		client := http.Client{}
-		resp, err := client.Get(testServer.URL + "/")
+		resp, err := client.Get(testServer.URL + "/system/healthcheck")
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 
