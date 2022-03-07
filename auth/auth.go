@@ -1,36 +1,51 @@
 package auth
 
 import (
+	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/jonDufty/recipes/common"
+	"github.com/jonDufty/recipes/common/database"
 	"github.com/jonDufty/recipes/config"
 	"github.com/urfave/cli/v2"
 )
 
 type App struct {
 	Config *config.AuthConfig
-	Router *chi.Mux
+	Ctx    context.Context
+	DB     *sql.DB
 }
 
-func ServeHandler(context *cli.Context) error {
-	config := config.NewAuthConfig()
+func ServeHandler(c *cli.Context) error {
+	cfg := config.NewAuthConfig()
 
-	app := App{}
-	app.Config = config
+	// connect to database
+	db, err := database.Connect(*cfg.DB)
+	if err != nil {
+		return errors.New("Could not connect to DB: " + err.Error())
+	}
 
-	r := common.NewRouter()
-	app.Router = r
+	fmt.Printf("Connected to DB at %s\n", cfg.DB.Address)
 
-	// Add routes
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "🔐")
-	})
+	app := App{
+		Config: cfg,
+		DB:     db,
+	}
 
-	log.Printf("Listening on port 80 ....")
-	return http.ListenAndServe(":80", r)
+	bindAddr := fmt.Sprintf(":%d", app.Config.Port)
+	log.Printf("Listening on %s", bindAddr)
+	server := http.Server{
+		Addr:         bindAddr,
+		Handler:      NewRouter(&app),
+		IdleTimeout:  20 * time.Second,
+		ReadTimeout:  20 * time.Second,
+		WriteTimeout: 20 * time.Second,
+	}
+
+	return server.ListenAndServe()
 
 }

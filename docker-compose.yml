@@ -2,7 +2,7 @@ version: "3"
 
 services:
   mysql:
-    image: mysql/mysql-server:8.0
+    image: mysql/mysql-server:latest
     ports:
       - 45000:3306/tcp
     volumes:
@@ -11,7 +11,32 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
       MYSQL_ROOT_HOST: '%'
+
+  auth:
+    image: recipes:test
+    ports:
+      - "9000:80"
+    command: serve auth
+
+  auth-dev:
+    build: ops/develop
+    volumes:
+      - .:/recipes:delegated
+      - gopkg:/go/pkg/mod
+    ports:
+      - "9000:80/tcp"
+      - "9100:40000/tcp"
+    cap_add:
+      - SYS_PTRACE
+    command: ops/develop/startup.sh serve auth
+
+  recipes:
+    image: recipes:test
+    depends_on:
+      - mysql
+    
       
 
 volumes:
   mysql-data: {}
+  gopkg:

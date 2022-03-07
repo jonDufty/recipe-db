@@ -15,9 +15,9 @@ import (
 func MigrateUp(ctx *cli.Context) error {
 	fmt.Println("Migrating up ...")
 
-	url := fmt.Sprint("mysql://root@tcp(127.0.0.1:45000)/recipedb")
+	dsn := fmt.Sprint("mysql://root@(mysql:3306)/recipedb")
 
-	handler, err := ConnectDB(url)
+	handler, err := ConnectDB(dsn)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func MigrateUp(ctx *cli.Context) error {
 
 func MigrateDown(ctx *cli.Context) error {
 	fmt.Println("Migrating down ...")
-	url := fmt.Sprintf("mysql://root@tcp(127.0.0.1:45000)/recipedb")
+	url := fmt.Sprintf("mysql://root@tcp(mysql:3306)/recipedb")
 
 	handler, err := ConnectDB(url)
 	if err != nil {
@@ -50,7 +50,7 @@ func ConnectDB(url string) (*migrate.Handle, error) {
 	}
 
 	start := time.Now()
-	path := "/Users/jondufty/Projects/99designs/recipe-db/migrations"
+	path := "/migrations"
 	handler, err := migrate.New(driver, path, migrate.WithHooks(
 		func(f file.File) error {
 			fmt.Printf("%5d %-60s", f.Version, f.Name)
