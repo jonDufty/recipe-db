@@ -6,6 +6,7 @@ import (
 
 	"github.com/jonDufty/recipes/auth"
 	"github.com/jonDufty/recipes/cmd"
+	"github.com/jonDufty/recipes/cookbook"
 	"github.com/urfave/cli/v2"
 )
 
@@ -44,6 +45,11 @@ func main() {
 					Name:   "auth",
 					Usage:  "Start auth microservice",
 					Action: auth.ServeHandler,
+				},
+				{
+					Name:   "cookbook",
+					Usage:  "Start cookbook microservice",
+					Action: cookbook.ServeHandler,
 				},
 			},
 		},

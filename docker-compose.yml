@@ -13,12 +13,6 @@ services:
       MYSQL_ROOT_HOST: '%'
 
   auth:
-    image: recipes:test
-    ports:
-      - "9000:80"
-    command: serve auth
-
-  auth-dev:
     build: ops/develop
     volumes:
       - .:/recipes:delegated
@@ -29,6 +23,18 @@ services:
     cap_add:
       - SYS_PTRACE
     command: ops/develop/startup.sh serve auth
+  
+  cookbook:
+    build: ops/develop
+    volumes:
+      - .:/recipes:delegated
+      - gopkg:/go/pkg/mod
+    ports:
+      - "8000:80/tcp"
+      - "8100:40000/tcp"
+    cap_add:
+      - SYS_PTRACE
+    command: ops/develop/startup.sh serve cookbook
 
   recipes:
     image: recipes:latest
