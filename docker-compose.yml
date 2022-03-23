@@ -31,7 +31,9 @@ services:
     command: ops/develop/startup.sh serve auth
 
   recipes:
-    image: recipes:test
+    image: recipes:latest
+    volumes:
+      - ./migrations:/migrations
     depends_on:
       - mysql
     

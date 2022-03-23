@@ -24,6 +24,11 @@ type AuthConfig struct {
 	AppConfig
 }
 
+type CookbookConfig struct {
+	Port int `envconfig:"port" default:"80"`
+	AppConfig
+}
+
 func NewAuthConfig() *AuthConfig {
 	config := &AuthConfig{}
 	baseDir := os.Getenv("BASE_DIR")
@@ -37,6 +42,26 @@ func NewAuthConfig() *AuthConfig {
 	}
 
 	err := LoadConfig(baseDir, "auth", config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return config
+}
+
+func NewCookbookConfig() *CookbookConfig {
+	config := &CookbookConfig{}
+	baseDir := os.Getenv("BASE_DIR")
+
+	if baseDir == "" {
+		baseDir = "."
+	}
+
+	if err := LoadConfig(baseDir, "recipes", config); err != nil {
+		log.Fatal(err)
+	}
+
+	err := LoadConfig(baseDir, "recipe", config)
 	if err != nil {
 		log.Fatal(err)
 	}
