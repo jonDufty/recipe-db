@@ -28,3 +28,11 @@ CREATE TABLE IF NOT EXISTS `measurement_unit` (
     `label` VARCHAR(64) NOT NULL,
     PRIMARY KEY (unit_id)
 );
+
+CREATE TABLE IF NOT EXISTS `instructions` (
+    `instruction_id` INT NOT NULL AUTO_INCREMENT,
+    `step` INT NOT NULL,
+    `text` TEXT,
+    `recipe_id` INT NOT NULL,
+    PRIMARY KEY (instruction_id)
+);

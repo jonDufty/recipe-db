@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package recipes;
+option go_package = "cookbook/rpc/cookbookpb";
+
+import "google/protobuf/timestamp.proto";
+
+// Cookbook is a collection of recipes.
+service Cookbook {
+    rpc GetUserByEmail(ByEmailRequest) returns (User);
+}
+
+message Recipe {
+    string title = 1;
+    string description = 2;
+    repeated Ingredient ingredients = 3;
+    repeated Instruction instructions = 4;
+}
+
+message Ingredient {
+    string label = 1;
+    Unit unit = 2;
+    float amount = 3;
+}
+
+message Unit {
+    string label = 1;
+}
+
+message Instruction {
+    int32 step = 1;
+    string text = 2;
+}
