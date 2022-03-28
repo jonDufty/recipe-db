@@ -12,6 +12,7 @@ func newTestDBConfig(testName string) Config {
 	// Check if we're in docker or not
 	addr := "mysql:3306"
 	if _, err := os.Stat("/.dockerenv"); err != nil {
+		fmt.Println("Not in docker, using localhost")
 		addr = "127.0.0.1:45000"
 	}
 

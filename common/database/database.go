@@ -45,6 +45,8 @@ func Connect(c Config) (*sql.DB, error) {
 		return nil, err
 	}
 
+	db.SetMaxIdleConns(0)
+
 	return db, nil
 }
 

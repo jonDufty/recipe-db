@@ -7,7 +7,7 @@ services:
       - 45000:3306/tcp
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./config/mysql8.cnf:/etc/mysql/conf.d/recipedb.cnf:ro"
+      - ./config/mysql8.cnf:/etc/mysql/conf.d/recipedb.cnf"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
       MYSQL_ROOT_HOST: '%'
