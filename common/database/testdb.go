@@ -78,5 +78,6 @@ func NewTestDBConnection() (*sql.DB, func()) {
 		panic(err)
 	}
 
+	db.SetMaxIdleConns(0)
 	return db, closer
 }

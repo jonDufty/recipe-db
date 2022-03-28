@@ -69,6 +69,7 @@ func (s *Server) LoginWithPassword(c context.Context, r *pb.LoginRequest) (*pb.L
 
 	return &pb.LoginResponse{
 		Token: token,
+		User:  mappers.ProtoFromUser(u),
 	}, nil
 }
 
