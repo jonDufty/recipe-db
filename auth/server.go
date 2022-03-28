@@ -100,6 +100,7 @@ func (s *Server) SignupWithPassword(c context.Context, r *pb.SignupRequest) (*pb
 
 	return &pb.LoginResponse{
 		Token: token,
+		User:  mappers.ProtoFromUser(requestUser),
 	}, nil
 }
 

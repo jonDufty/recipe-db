@@ -18,7 +18,7 @@ func newTestDBConfig(testName string) Config {
 	return Config{
 		Address: fmt.Sprintf("root@tcp(%s)/", addr),
 		User:    "root",
-		Name:    "test_recipe" + testName,
+		Name:    testName,
 	}
 }
 
@@ -41,33 +41,40 @@ func initTestDB(db *sql.DB, cfg Config) error {
 	mustExec(tx, "CREATE DATABASE "+cfg.Name)
 	mustExec(tx, "USE "+cfg.Name)
 
-	fmt.Println("Migrating up")
-	handler, err := ConnectDB(fmt.Sprintf("mysql://%s/%s", cfg.Address, cfg.Name))
-	if err != nil {
-		return err
+	for _, query := range Schema {
+		mustExec(tx, query.Sql)
 	}
 
-	defer handler.Close()
-
-	return handler.Up(context.Background())
+	return nil
 }
 
 func NewTestDBConnection() (*sql.DB, func()) {
 
-	cfg := newTestDBConfig("basic_test")
+	cfg := newTestDBConfig("")
 	db, err := Connect(cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	initTestDB(db, cfg)
-
+	cfg.Name = "test_recipes"
 	closer := func() {
 		_, err := db.Exec("DROP DATABASE IF EXISTS " + cfg.Name)
 		if err != nil {
 			panic(err)
 		}
 		db.Close()
+	}
+
+	if err := initTestDB(db, cfg); err != nil {
+		closer()
+		panic(err)
+	}
+
+	// Close then reconnect with test db
+	db.Close()
+	db, err = Connect(cfg)
+	if err != nil {
+		panic(err)
 	}
 
 	return db, closer

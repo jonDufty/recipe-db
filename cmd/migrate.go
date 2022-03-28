@@ -6,9 +6,9 @@ import (
 )
 
 func MigrateUp(ctx *cli.Context) error {
-	return db.MigrateUp(ctx)
+	return db.MigrateUp("mysql://root@(mysql:3306)/recipedb")
 }
 
 func MigrateDown(ctx *cli.Context) error {
-	return db.MigrateDown(ctx)
+	return db.MigrateDown("mysql://root@(mysql:3306)/recipedb")
 }

@@ -11,28 +11,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type TestRoutes struct {
-	App   *App
-	Http  http.Handler
-	Twirp *Server
-}
-
-func NewTestRoutes() *TestRoutes {
-	cfg := config.NewAuthConfig()
-	app := NewTestApp(cfg)
-	router := NewRouter(app)
-	twirpServer := NewServer(app)
-
-	return &TestRoutes{
-		App:   app,
-		Http:  router,
-		Twirp: twirpServer,
-	}
-}
-
 func TestTwirpServer(t *testing.T) {
-	testApp := NewTestRoutes()
-
+	testApp := NewTestApp(config.NewAuthConfig())
+	testApp.InitServers()
 	testServer := httptest.NewServer(testApp.Http)
 	defer testServer.Close()
 
@@ -48,8 +29,8 @@ func TestTwirpServer(t *testing.T) {
 
 func TestHttpRoutes(t *testing.T) {
 
-	testApp := NewTestRoutes()
-
+	testApp := NewTestApp(config.NewAuthConfig())
+	testApp.InitServers()
 	testServer := httptest.NewServer(testApp.Http)
 	defer testServer.Close()
 

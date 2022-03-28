@@ -9,13 +9,10 @@ import (
 	"github.com/db-journey/migrate/v2"
 	"github.com/db-journey/migrate/v2/file"
 	mysqlMigrationDriver "github.com/db-journey/mysql-driver"
-	cli "github.com/urfave/cli/v2"
 )
 
-func MigrateUp(ctx *cli.Context) error {
+func MigrateUp(dsn string) error {
 	fmt.Println("Migrating up ...")
-
-	dsn := fmt.Sprint("mysql://root@(mysql:3306)/recipedb")
 
 	handler, err := ConnectDB(dsn)
 	if err != nil {
@@ -28,11 +25,10 @@ func MigrateUp(ctx *cli.Context) error {
 
 }
 
-func MigrateDown(ctx *cli.Context) error {
+func MigrateDown(dsn string) error {
 	fmt.Println("Migrating down ...")
-	url := fmt.Sprintf("mysql://root@tcp(mysql:3306)/recipedb")
 
-	handler, err := ConnectDB(url)
+	handler, err := ConnectDB(dsn)
 	if err != nil {
 		return err
 	}

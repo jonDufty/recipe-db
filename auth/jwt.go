@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -48,8 +47,6 @@ func GenerateToken(u *user.User) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Println(tokenString)
 
 	return tokenString, nil
 }
