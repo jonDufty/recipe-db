@@ -49,3 +49,13 @@ func ServeHandler(c *cli.Context) error {
 	return server.ListenAndServe()
 
 }
+
+func NewTestApp(c *config.AuthConfig) *App {
+
+	app := App{
+		Config: c,
+		Ctx:    context.Background(),
+	}
+
+	return &app
+}

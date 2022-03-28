@@ -10,6 +10,9 @@ service Auth {
     rpc SayHello(SayHelloRequest) returns (SayHelloResponse);
     rpc GetUserById(ByIdRequest) returns (User);
     rpc GetUserByEmail(ByEmailRequest) returns (User);
+    rpc LoginWithPassword(LoginRequest) returns (LoginResponse);
+    rpc SignupWithPassword(SignupRequest) returns (LoginResponse);
+    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
 }
 
 message User {
@@ -25,6 +28,32 @@ message ByIdRequest {
 
 message ByEmailRequest {
     string email = 1; // email of the user
+}
+
+message ValidateTokenRequest {
+    string token = 1; // token of the user
+}
+
+message ValidateTokenResponse {
+    bool valid = 1; // true if the token is valid
+    repeated string errors = 2; // list of errors
+}
+
+message LoginRequest {
+    string email = 1; // email of the user
+    string password = 2; // password of the user
+}
+
+message SignupRequest {
+    string full_name = 1; // full name of the user
+    string email = 2; // email of the user
+    string password = 3; // password of the user
+}
+
+message LoginResponse {
+    string token = 1; // token of the user
+    repeated string errors = 2; // list of errors
+    User user = 3; // user object
 }
 
 // SayHello says hello...obviously

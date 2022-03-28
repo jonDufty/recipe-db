@@ -40,20 +40,20 @@ func NewRouter(a *App) http.Handler {
 	})
 
 	// Common auth endpoints
-	r.Group(func(r chi.Router) {
-		// Other middleware
+	// r.Group(func(r chi.Router) {
+	// 	// Other middleware
 
-		r.Post("/login", login)
-		r.Post("/register", register)
+	// 	r.Post("/login", login)
+	// 	r.Post("/register", register)
 
-	})
+	// })
 
-	// Test authenticated endpoints
-	r.Group(func(r chi.Router) {
-		r.Use(session.Middleware())
+	// // Test authenticated endpoints
+	// r.Group(func(r chi.Router) {
+	// 	r.Use(session.Middleware())
 
-		r.Get("/check", check)
-	})
+	// 	r.Get("/check", check)
+	// })
 
 	// Add twirp routes
 	r.Group((func(chi.Router) {
