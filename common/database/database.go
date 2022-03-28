@@ -112,6 +112,23 @@ func Update(ctx context.Context, table string, src interface{}) error {
 	return err
 }
 
+func Exec(ctx context.Context, query string) error {
+	tx, err := StartTx(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err != nil {
+		e := tx.Rollback()
+		log.Print(err)
+		return errors.New(err.Error() + e.Error())
+	} else {
+		err = tx.Commit()
+	}
+
+	return err
+}
+
 // Query
 
 // Get - Users meddler.QueryRow to get a single row result

@@ -7,9 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/joho/godotenv"
-	"github.com/kelseyhightower/envconfig"
-
 	"github.com/jonDufty/recipes/common/database"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type AppConfig struct {
@@ -61,7 +60,7 @@ func NewCookbookConfig() *CookbookConfig {
 		log.Fatal(err)
 	}
 
-	err := LoadConfig(baseDir, "recipe", config)
+	err := LoadConfig(baseDir, "cookbook", config)
 	if err != nil {
 		log.Fatal(err)
 	}
