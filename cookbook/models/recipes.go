@@ -1,5 +1,11 @@
 package models
 
+import (
+	"context"
+
+	"github.com/jonDufty/recipes/common/database"
+)
+
 type Ingredient struct {
 	Id    int    `json:"Id" meddler:"ingredient_id,pk"`
 	Label string `json:"label" meddler:"label"`
@@ -71,38 +77,40 @@ func NewMockRecipe() *RecipeDB {
 	}
 }
 
-func (*RecipeDB) AddIngredient(ingredient *RecipeIngredientDB) {
+func GetRecipeById(ctx context.Context, id int) *RecipeDB {
 	panic("implement me")
 }
 
-func (*RecipeDB) AddInstruction(instruction *RecipeInstructionDB) {
+func GetRecipeByTitle(ctx context.Context, title string) *RecipeDB {
 	panic("implement me")
 }
 
-func GetRecipeById(id int) *RecipeDB {
+func GetIngredientById(ctx context.Context, id int) *Ingredient {
 	panic("implement me")
 }
 
-func GetRecipeByTitle(title string) *RecipeDB {
+func GetUnitById(ctx context.Context, id int) *Unit {
 	panic("implement me")
 }
 
-func GetIngredientById(id int) *Ingredient {
+func GetRecipeIngredientById(ctx context.Context, id int) *RecipeIngredientDB {
 	panic("implement me")
 }
 
-func GetUnitById(id int) *Unit {
+func (r *RecipeDB) GetRecipeIngredients(ctx context.Context) []RecipeIngredientDB {
 	panic("implement me")
 }
 
-func GetRecipeIngredientById(id int) *RecipeIngredientDB {
+func (r *RecipeDB) GetRecipeInstructions(ctx context.Context) []RecipeInstructionDB {
 	panic("implement me")
 }
 
-func (*RecipeDB) GetRecipeIngredients() []RecipeIngredientDB {
-	panic("implement me")
+func (ri *RecipeIngredientDB) InsertRecipeIngredient(ctx context.Context) error {
+	err := database.Insert(ctx, "recipe_instructions", ri)
+	return err
 }
 
-func (*RecipeDB) GetRecipeInstructions() []RecipeInstructionDB {
-	panic("implement me")
+func (ri *RecipeInstructionDB) InsertRecipeInstruction(ctx context.Context) error {
+	err := database.Insert(ctx, "recipe_instructions", ri)
+	return err
 }
