@@ -29,7 +29,7 @@ func Get(ctx context.Context) (meddler.DB, error) {
 	return nil, errors.New("DB not in context")
 }
 
-func dbContext(ctx context.Context, db meddler.DB) context.Context {
+func DbContext(ctx context.Context, db meddler.DB) context.Context {
 	return context.WithValue(ctx, dBKey, db)
 }
 
@@ -54,7 +54,7 @@ func Middleware(db meddler.DB) func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 
 		f := func(w http.ResponseWriter, r *http.Request) {
-			next.ServeHTTP(w, r.WithContext(dbContext(r.Context(), db)))
+			next.ServeHTTP(w, r.WithContext(DbContext(r.Context(), db)))
 		}
 		return http.HandlerFunc(f)
 	}
@@ -105,6 +105,23 @@ func Update(ctx context.Context, table string, src interface{}) error {
 	if err != nil {
 		e := tx.Rollback()
 		return errors.New(e.Error() + e.Error())
+	} else {
+		err = tx.Commit()
+	}
+
+	return err
+}
+
+func Exec(ctx context.Context, query string) error {
+	tx, err := StartTx(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err != nil {
+		e := tx.Rollback()
+		log.Print(err)
+		return errors.New(err.Error() + e.Error())
 	} else {
 		err = tx.Commit()
 	}

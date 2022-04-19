@@ -1,4 +1,4 @@
-package tests
+package auth
 
 import (
 	"context"
@@ -6,37 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/jonDufty/recipes/auth"
 	authpb "github.com/jonDufty/recipes/auth/rpc/authpb"
 	"github.com/jonDufty/recipes/config"
 	"github.com/stretchr/testify/require"
 )
 
-type TestApp struct {
-	App   *auth.App
-	Http  http.Handler
-	Twirp *auth.Server
-}
-
-func NewTestApp() *TestApp {
-	cfg := config.NewAuthConfig()
-	app := &auth.App{
-		Config: cfg,
-	}
-
-	router := auth.NewRouter(app)
-	twirpServer := auth.NewServer(app)
-
-	return &TestApp{
-		App:   app,
-		Http:  router,
-		Twirp: twirpServer,
-	}
-}
-
 func TestTwirpServer(t *testing.T) {
-	testApp := NewTestApp()
-
+	testApp := NewTestApp(config.NewAuthConfig())
+	testApp.InitServers()
 	testServer := httptest.NewServer(testApp.Http)
 	defer testServer.Close()
 
@@ -52,8 +29,8 @@ func TestTwirpServer(t *testing.T) {
 
 func TestHttpRoutes(t *testing.T) {
 
-	testApp := NewTestApp()
-
+	testApp := NewTestApp(config.NewAuthConfig())
+	testApp.InitServers()
 	testServer := httptest.NewServer(testApp.Http)
 	defer testServer.Close()
 

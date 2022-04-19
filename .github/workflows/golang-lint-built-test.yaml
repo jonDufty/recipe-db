@@ -31,6 +31,7 @@ jobs:
       with: 
         go-version: '1.17'
     - run: export BASE_DIR=$(pwd)
+    - run: docker-compose up -d mysql
     - run: go test ./...
   
   # Build
