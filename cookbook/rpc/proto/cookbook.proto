@@ -6,6 +6,7 @@ option go_package = "cookbook/rpc/cookbookpb";
 // Cookbook is a collection of recipes.
 service Cookbook {
     rpc GetRecipeById(GetRecipeByIdRequest) returns (Recipe);
+    rpc ListRecipes(ListRecipesRequest) returns (RecipeList);
     rpc InsertRecipe(Recipe) returns (InsertRecipeResponse);
 }
 
@@ -18,12 +19,19 @@ message InsertRecipeResponse {
     string errors = 2;
 }
 
+message ListRecipesRequest {
+}
+
 message Recipe {
     int64 id = 1;
     string title = 2;
     string description = 3;
     repeated Ingredient ingredients = 4;
     repeated Instruction instructions = 5;
+}
+
+message RecipeList {
+    repeated Recipe recipes = 1;
 }
 
 message Ingredient {

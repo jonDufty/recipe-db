@@ -20,3 +20,7 @@ func (s *Server) GetRecipeById(context.Context, *rpc.GetRecipeByIdRequest) (*rpc
 func (s *Server) InsertRecipe(context.Context, *rpc.Recipe) (*rpc.InsertRecipeResponse, error) {
 	panic("implement me")
 }
+
+func (s *Server) ListRecipes(context.Context, *rpc.ListRecipesRequest) (*rpc.RecipeList, error) {
+	panic("implement me")
+}
