@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `recipes` (
     `description` VARCHAR(255),
     `instructions` TEXT,
     PRIMARY KEY (recipe_id)
-);
+);  
 
 
 CREATE TABLE IF NOT EXISTS `ingredient` (

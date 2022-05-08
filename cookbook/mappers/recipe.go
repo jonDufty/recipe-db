@@ -1,34 +1,24 @@
 package mappers
 
 import (
-	"github.com/jonDufty/recipes/cookbook/models"
+	"github.com/jonDufty/recipes/cookbook/models/recipe"
+	rpc "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb"
 )
 
-type RecipeIngredientAPI struct {
-	Ingredient models.Ingredient `json:"ingredient"`
-	Unit       models.Unit       `json:"unit"`
-	Amount     float32           `json:"amount"`
-}
-
-type RecipeInstructionAPI struct {
-	Step int    `json:"step"`
-	Text string `json:"text"`
-}
-
-type RecipeAPI struct {
-	Id           int                    `json:"id"`
-	Title        string                 `json:"title"`
-	Description  string                 `json:"description"`
-	Ingredients  []RecipeIngredientAPI  `json:"ingredients"`
-	Instructions []RecipeInstructionAPI `json:"instructions"`
-}
-
-func RecipeFromDbModel(model *models.RecipeDB) *RecipeAPI {
-	return &RecipeAPI{
-		Id:           model.Id,
+func PbRecipeFromDbModel(model *recipe.RecipeDB) *rpc.Recipe {
+	return &rpc.Recipe{
+		Id:           int64(model.Id),
 		Title:        model.Title,
 		Description:  model.Description,
-		Ingredients:  []RecipeIngredientAPI{},
-		Instructions: []RecipeInstructionAPI{},
+		Ingredients:  []*rpc.Ingredient{},
+		Instructions: []*rpc.Instruction{},
+	}
+}
+
+func DbModelFromRpc(r *rpc.Recipe) *recipe.RecipeDB {
+	return &recipe.RecipeDB{
+		Id:          int(r.Id),
+		Title:       r.Title,
+		Description: r.Description,
 	}
 }

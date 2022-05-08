@@ -49,7 +49,7 @@ func initTestDB(db *sql.DB, cfg Config) error {
 	return nil
 }
 
-func NewTestDBConnection() (*sql.DB, func()) {
+func NewTestDBConnection(testDbName string) (*sql.DB, func()) {
 
 	cfg := newTestDBConfig("")
 	db, err := Connect(cfg)
@@ -57,8 +57,9 @@ func NewTestDBConnection() (*sql.DB, func()) {
 		panic(err)
 	}
 
-	cfg.Name = "test_recipes"
+	cfg.Name = testDbName
 	closer := func() {
+		fmt.Println("Destroying DB " + cfg.Name)
 		_, err := db.Exec("DROP DATABASE IF EXISTS " + cfg.Name)
 		if err != nil {
 			panic(err)

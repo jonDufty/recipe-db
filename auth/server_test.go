@@ -112,7 +112,6 @@ func TestLogin(t *testing.T) {
 				require.Error(t, err)
 				return
 			}
-			fmt.Printf("%v", resp)
 			require.NoError(t, err)
 			require.Equal(t, tc.expected.User.Email, resp.User.Email)
 			require.Equal(t, tc.expected.User.FullName, resp.User.FullName)
