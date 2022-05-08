@@ -1,9 +1,11 @@
-package models
+package recipe
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jonDufty/recipes/common/database"
+	"github.com/russross/meddler"
 )
 
 type Ingredient struct {
@@ -77,32 +79,75 @@ func NewMockRecipe() *RecipeDB {
 	}
 }
 
-func GetRecipeById(ctx context.Context, id int) *RecipeDB {
-	panic("implement me")
+func GetAllRecipes(ctx context.Context) ([]*RecipeDB, error) {
+	tx, err := database.StartTx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	r := []*RecipeDB{}
+	err = meddler.QueryAll(tx, r, "SELECT * from recipes")
+	if err != nil {
+		e := tx.Rollback()
+		return nil, errors.New(e.Error() + e.Error())
+	} else {
+		err = tx.Commit()
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
 }
 
-func GetRecipeByTitle(ctx context.Context, title string) *RecipeDB {
-	panic("implement me")
+func GetRecipeById(ctx context.Context, id int) (*RecipeDB, error) {
+	tx, err := database.StartTx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &RecipeDB{}
+	err = meddler.QueryRow(tx, r, "SELECT * from recipes WHERE recipe_id = ?", id)
+	if err != nil {
+		e := tx.Rollback()
+		return nil, errors.New(e.Error() + e.Error())
+	} else {
+		err = tx.Commit()
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
 }
 
-func GetIngredientById(ctx context.Context, id int) *Ingredient {
-	panic("implement me")
+func GetRecipeByTitle(ctx context.Context, title string) (*RecipeDB, error) {
+	tx, err := database.StartTx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &RecipeDB{}
+	err = meddler.QueryRow(tx, r, "SELECT * from recipes WHERE title = ?", title)
+	if err != nil {
+		e := tx.Rollback()
+		return nil, errors.New(e.Error() + e.Error())
+	} else {
+		err = tx.Commit()
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
 }
 
-func GetUnitById(ctx context.Context, id int) *Unit {
-	panic("implement me")
-}
-
-func GetRecipeIngredientById(ctx context.Context, id int) *RecipeIngredientDB {
-	panic("implement me")
-}
-
-func (r *RecipeDB) GetRecipeIngredients(ctx context.Context) []RecipeIngredientDB {
-	panic("implement me")
-}
-
-func (r *RecipeDB) GetRecipeInstructions(ctx context.Context) []RecipeInstructionDB {
-	panic("implement me")
+func (r *RecipeDB) InsertRecipe(ctx context.Context) error {
+	err := database.Insert(ctx, "recipes", r)
+	return err
 }
 
 func (ri *RecipeIngredientDB) InsertRecipeIngredient(ctx context.Context) error {
