@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -44,6 +43,8 @@ func Connect(c Config) (*sql.DB, error) {
 	if err = db.Ping(); err != nil {
 		return nil, err
 	}
+
+	db.SetMaxOpenConns(5)
 
 	return db, nil
 }
@@ -85,8 +86,10 @@ func Insert(ctx context.Context, table string, src interface{}) error {
 	err = meddler.Insert(tx, table, src)
 	if err != nil {
 		e := tx.Rollback()
-		log.Print(err)
-		return errors.New(err.Error() + e.Error())
+		if e != nil {
+			return errors.New(err.Error() + e.Error())
+		}
+		return err
 	} else {
 		err = tx.Commit()
 	}
@@ -104,7 +107,10 @@ func Update(ctx context.Context, table string, src interface{}) error {
 	err = meddler.Insert(tx, table, src)
 	if err != nil {
 		e := tx.Rollback()
-		return errors.New(e.Error() + e.Error())
+		if e != nil {
+			return errors.New(e.Error() + e.Error())
+		}
+		return err
 	} else {
 		err = tx.Commit()
 	}

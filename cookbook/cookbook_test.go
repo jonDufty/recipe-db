@@ -6,6 +6,7 @@ import (
 
 	"github.com/jonDufty/recipes/common/database"
 	"github.com/jonDufty/recipes/config"
+	"github.com/jonDufty/recipes/cookbook/models/recipe"
 )
 
 type TestApp struct {
@@ -13,6 +14,17 @@ type TestApp struct {
 	Twirp  *Server
 	Http   http.Handler
 	Closer func()
+}
+
+var testRecipes []*recipe.RecipeDB = []*recipe.RecipeDB{
+	{
+		Title:       "Test recipe 1",
+		Description: "A chicken curry",
+	},
+	{
+		Title:       "Test recipe 2",
+		Description: "A lamb curry",
+	},
 }
 
 func NewTestApp(c *config.CookbookConfig) *TestApp {
@@ -27,8 +39,8 @@ func NewTestApp(c *config.CookbookConfig) *TestApp {
 	}
 }
 
-func (ta *TestApp) InitDB() {
-	db, closer := database.NewTestDBConnection()
+func (ta *TestApp) InitDB(dbName string) {
+	db, closer := database.NewTestDBConnection(dbName)
 	ta.App.DB = db
 	ta.Closer = closer
 	ta.App.Ctx = database.DbContext(context.Background(), ta.App.DB)
@@ -41,4 +53,7 @@ func (ta *TestApp) InitServers() {
 
 func (ta *TestApp) PopulateTestCookbook() {
 
+	for _, r := range testRecipes {
+		r.InsertRecipe(ta.App.Ctx)
+	}
 }

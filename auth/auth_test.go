@@ -46,7 +46,7 @@ func NewTestApp(c *config.AuthConfig) *TestApp {
 }
 
 func (ta *TestApp) InitDB() {
-	db, closer := database.NewTestDBConnection()
+	db, closer := database.NewTestDBConnection("test_recipes")
 	ta.App.DB = db
 	ta.Closer = closer
 	ta.App.Ctx = database.DbContext(context.Background(), ta.App.DB)

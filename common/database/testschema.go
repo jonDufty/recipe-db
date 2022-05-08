@@ -36,7 +36,6 @@ var Schema = Database{
 		recipe_id INT NOT NULL AUTO_INCREMENT,
 		title VARCHAR(255) NOT NULL,
 		description VARCHAR(255),
-		instructions TEXT,
 		PRIMARY KEY (recipe_id)
 		);`,
 	},

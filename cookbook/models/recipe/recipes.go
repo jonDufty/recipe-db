@@ -86,10 +86,13 @@ func GetAllRecipes(ctx context.Context) ([]*RecipeDB, error) {
 	}
 
 	r := []*RecipeDB{}
-	err = meddler.QueryAll(tx, r, "SELECT * from recipes")
+	err = meddler.QueryAll(tx, &r, "SELECT * from recipes")
 	if err != nil {
 		e := tx.Rollback()
-		return nil, errors.New(e.Error() + e.Error())
+		if e != nil {
+			return nil, errors.New(e.Error() + err.Error())
+		}
+		return nil, err
 	} else {
 		err = tx.Commit()
 	}
@@ -111,7 +114,10 @@ func GetRecipeById(ctx context.Context, id int) (*RecipeDB, error) {
 	err = meddler.QueryRow(tx, r, "SELECT * from recipes WHERE recipe_id = ?", id)
 	if err != nil {
 		e := tx.Rollback()
-		return nil, errors.New(e.Error() + e.Error())
+		if e != nil {
+			return nil, errors.New(e.Error() + err.Error())
+		}
+		return nil, err
 	} else {
 		err = tx.Commit()
 	}
@@ -133,7 +139,10 @@ func GetRecipeByTitle(ctx context.Context, title string) (*RecipeDB, error) {
 	err = meddler.QueryRow(tx, r, "SELECT * from recipes WHERE title = ?", title)
 	if err != nil {
 		e := tx.Rollback()
-		return nil, errors.New(e.Error() + e.Error())
+		if e != nil {
+			return nil, errors.New(e.Error() + err.Error())
+		}
+		return nil, err
 	} else {
 		err = tx.Commit()
 	}
