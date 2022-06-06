@@ -6,19 +6,30 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/jonDufty/recipes/cookbook/rpc/cookbookpb"
 	"github.com/jonDufty/recipes/graph/generated"
+	"github.com/jonDufty/recipes/graph/model"
 )
 
 func (r *ingredientResolver) Amount(ctx context.Context, obj *cookbookpb.Ingredient) (float64, error) {
 	return float64(obj.Amount), nil
 }
 
-func (r *mutationResolver) CreateRecipe(ctx context.Context, input cookbookpb.Recipe) (*cookbookpb.InsertRecipeResponse, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateRecipe(ctx context.Context, input model.RecipeInput) (*cookbookpb.InsertRecipeResponse, error) {
+	req := &cookbookpb.Recipe{
+		Title:        input.Title,
+		Description:  input.Description,
+		Ingredients:  input.Ingredients,
+		Instructions: input.Instructions,
+	}
+	resp, err := r.Clients.Cookbook.InsertRecipe(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 func (r *queryResolver) Recipes(ctx context.Context, id *string) ([]*cookbookpb.Recipe, error) {
@@ -28,7 +39,7 @@ func (r *queryResolver) Recipes(ctx context.Context, id *string) ([]*cookbookpb.
 		if err != nil {
 			return nil, errors.New("failed to convert id to integer")
 		}
-		resp, err := r.app.Clients.Cookbook.GetRecipeById(
+		resp, err := r.Clients.Cookbook.GetRecipeById(
 			ctx,
 			&cookbookpb.GetRecipeByIdRequest{
 				Id: int64(reqId),
@@ -41,7 +52,7 @@ func (r *queryResolver) Recipes(ctx context.Context, id *string) ([]*cookbookpb.
 
 	} else {
 		req := &cookbookpb.ListRecipesRequest{}
-		resp, err := r.app.Clients.Cookbook.ListRecipes(ctx, req)
+		resp, err := r.Clients.Cookbook.ListRecipes(ctx, req)
 		if err != nil {
 			return nil, err
 		}

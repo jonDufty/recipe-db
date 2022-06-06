@@ -49,9 +49,7 @@ type Unit @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.U
   label: String!
 }
 
-
-
-input RecipeInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Recipe" ){
+input RecipeInput {
   title: String!
   description: String!
   ingredients: [IngredientInput!]!

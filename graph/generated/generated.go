@@ -14,6 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/jonDufty/recipes/cookbook/rpc/cookbookpb"
+	"github.com/jonDufty/recipes/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -64,7 +65,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateRecipe func(childComplexity int, input cookbookpb.Recipe) int
+		CreateRecipe func(childComplexity int, input model.RecipeInput) int
 	}
 
 	Query struct {
@@ -89,7 +90,7 @@ type IngredientResolver interface {
 	Amount(ctx context.Context, obj *cookbookpb.Ingredient) (float64, error)
 }
 type MutationResolver interface {
-	CreateRecipe(ctx context.Context, input cookbookpb.Recipe) (*cookbookpb.InsertRecipeResponse, error)
+	CreateRecipe(ctx context.Context, input model.RecipeInput) (*cookbookpb.InsertRecipeResponse, error)
 }
 type QueryResolver interface {
 	Recipes(ctx context.Context, id *string) ([]*cookbookpb.Recipe, error)
@@ -174,7 +175,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateRecipe(childComplexity, args["input"].(cookbookpb.Recipe)), true
+		return e.complexity.Mutation.CreateRecipe(childComplexity, args["input"].(model.RecipeInput)), true
 
 	case "Query.recipes":
 		if e.complexity.Query.Recipes == nil {
@@ -365,9 +366,7 @@ type Unit @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.U
   label: String!
 }
 
-
-
-input RecipeInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Recipe" ){
+input RecipeInput {
   title: String!
   description: String!
   ingredients: [IngredientInput!]!
@@ -406,10 +405,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_createRecipe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 cookbookpb.Recipe
+	var arg0 model.RecipeInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRecipeInput2githubᚗcomᚋjonDuftyᚋrecipesᚋcookbookᚋrpcᚋcookbookpbᚐRecipe(ctx, tmp)
+		arg0, err = ec.unmarshalNRecipeInput2githubᚗcomᚋjonDuftyᚋrecipesᚋgraphᚋmodelᚐRecipeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -828,7 +827,7 @@ func (ec *executionContext) _Mutation_createRecipe(ctx context.Context, field gr
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateRecipe(rctx, fc.Args["input"].(cookbookpb.Recipe))
+			return ec.resolvers.Mutation().CreateRecipe(rctx, fc.Args["input"].(model.RecipeInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
@@ -3301,8 +3300,8 @@ func (ec *executionContext) unmarshalInputInstructionInput(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputRecipeInput(ctx context.Context, obj interface{}) (cookbookpb.Recipe, error) {
-	var it cookbookpb.Recipe
+func (ec *executionContext) unmarshalInputRecipeInput(ctx context.Context, obj interface{}) (model.RecipeInput, error) {
+	var it model.RecipeInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -4313,7 +4312,7 @@ func (ec *executionContext) marshalNRecipe2ᚖgithubᚗcomᚋjonDuftyᚋrecipes�
 	return ec._Recipe(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRecipeInput2githubᚗcomᚋjonDuftyᚋrecipesᚋcookbookᚋrpcᚋcookbookpbᚐRecipe(ctx context.Context, v interface{}) (cookbookpb.Recipe, error) {
+func (ec *executionContext) unmarshalNRecipeInput2githubᚗcomᚋjonDuftyᚋrecipesᚋgraphᚋmodelᚐRecipeInput(ctx context.Context, v interface{}) (model.RecipeInput, error) {
 	res, err := ec.unmarshalInputRecipeInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
