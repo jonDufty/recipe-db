@@ -2,6 +2,18 @@
 #
 # https://gqlgen.com/getting-started/
 
+directive @goModel(model: String, models: [String!]) on OBJECT
+    | INPUT_OBJECT
+    | SCALAR
+    | ENUM
+    | INTERFACE
+    | UNION
+
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+    | FIELD_DEFINITION
+
+directive @isAuthenticated on FIELD_DEFINITION
+
 type Todo {
   id: ID!
   text: String!
@@ -26,3 +38,64 @@ input NewTodo {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
 }
+
+type Recipe @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Recipe") {
+  id: ID!
+  name: String!
+  description: String!
+  ingredients: [Ingredient!]!
+  instructions: [Instruction!]!
+}
+
+type Ingredient @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Ingredient") {
+  label: String!
+  unit: Unit!
+  amount: Float!
+}
+
+type Instruction @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Instruction") {
+  step: Int!
+  text: String!
+}
+
+type Unit @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Unit") {
+  label: String!
+}
+
+extend type Query {
+  recipes(id: ID): [Recipe!]!
+  recipesAuth(id: ID): [Recipe!]! @isAuthenticated
+}
+
+extend type Mutation {
+  createRecipe(input: RecipeInput!): CreateRecipePayload! @isAuthenticated
+}
+
+input RecipeInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Recipe" ){
+  name: String!
+  description: String!
+  ingredients: [IngredientInput!]!
+  instructions: [InstructionInput!]!
+}
+
+input IngredientInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Ingredient") {
+  label: String!
+  unit: UnitInput!
+  amount: Float!
+}
+
+input InstructionInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Instruction") {
+  step: Int!
+  text: String!
+}
+
+input UnitInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Unit") {
+  label: String!
+}
+
+type CreateRecipePayload @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.InsertRecipeResponse") {
+  id: ID!
+  errors: String!
+}
+
+
