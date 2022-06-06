@@ -14,34 +14,21 @@ directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITI
 
 directive @isAuthenticated on FIELD_DEFINITION
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+type Query
+type Mutation
+
+extend type Query {
+  recipes(id: ID): [Recipe!]!
+  recipesAuth(id: ID): [Recipe!]! @isAuthenticated
 }
 
-type User {
-  id: ID!
-  name: String!
-}
-
-type Query {
-  todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
+extend type Mutation {
+  createRecipe(input: RecipeInput!): CreateRecipePayload! @isAuthenticated
 }
 
 type Recipe @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Recipe") {
   id: ID!
-  name: String!
+  title: String!
   description: String!
   ingredients: [Ingredient!]!
   instructions: [Instruction!]!
@@ -62,17 +49,10 @@ type Unit @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.U
   label: String!
 }
 
-extend type Query {
-  recipes(id: ID): [Recipe!]!
-  recipesAuth(id: ID): [Recipe!]! @isAuthenticated
-}
 
-extend type Mutation {
-  createRecipe(input: RecipeInput!): CreateRecipePayload! @isAuthenticated
-}
 
 input RecipeInput @goModel(model: "github.com/jonDufty/recipes/cookbook/rpc/cookbookpb.Recipe" ){
-  name: String!
+  title: String!
   description: String!
   ingredients: [IngredientInput!]!
   instructions: [InstructionInput!]!
