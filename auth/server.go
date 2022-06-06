@@ -88,8 +88,8 @@ func (s *Server) SignupWithPassword(c context.Context, r *pb.SignupRequest) (*pb
 
 	err = requestUser.InsertUser(c)
 	if err != nil {
-		twirp.NewError(twirp.Internal, "")
 		log.Printf("Error inserting user into db: %v", requestUser)
+		return nil, twirp.NewError(twirp.Internal, "")
 	}
 
 	log.Print("User created successfully")

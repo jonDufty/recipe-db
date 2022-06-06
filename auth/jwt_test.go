@@ -10,7 +10,6 @@ import (
 type test struct {
 	name  string
 	input *user.User
-	token string
 }
 
 func TestCreateJwt(t *testing.T) {

@@ -145,7 +145,7 @@ func TestListRecipes(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.name, func(tx *testing.T) {
-			resp, err := client.ListRecipes(testApp.App.Ctx, &rpc.ListRecipesRequest{})
+			resp, err := client.ListRecipes(testApp.App.Ctx, test.input)
 			require.NoError(t, err)
 
 			for idx, rec := range resp.Recipes {

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -61,6 +62,9 @@ func (ta *TestApp) PopulateTestUsers() {
 	for _, u := range users {
 		hash, _ := crypto.HashPassword(u.PasswordHash)
 		u.PasswordHash = hash
-		u.InsertUser(ta.App.Ctx)
+		err := u.InsertUser(ta.App.Ctx)
+		if err != nil {
+			log.Fatalf("Failed to seed database")
+		}
 	}
 }
