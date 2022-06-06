@@ -2,6 +2,7 @@ package cookbook
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/jonDufty/recipes/common/database"
@@ -54,6 +55,9 @@ func (ta *TestApp) InitServers() {
 func (ta *TestApp) PopulateTestCookbook() {
 
 	for _, r := range testRecipes {
-		r.InsertRecipe(ta.App.Ctx)
+		err := r.InsertRecipe(ta.App.Ctx)
+		if err != nil {
+			log.Fatal("Failed to seed database")
+		}
 	}
 }

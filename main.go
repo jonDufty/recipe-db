@@ -7,6 +7,7 @@ import (
 	"github.com/jonDufty/recipes/auth"
 	"github.com/jonDufty/recipes/cmd"
 	"github.com/jonDufty/recipes/cookbook"
+	"github.com/jonDufty/recipes/graph"
 	"github.com/urfave/cli/v2"
 )
 
@@ -50,6 +51,11 @@ func main() {
 					Name:   "cookbook",
 					Usage:  "Start cookbook microservice",
 					Action: cookbook.ServeHandler,
+				},
+				{
+					Name:   "graph",
+					Usage:  "Start Graphql server",
+					Action: graph.ServeGraph,
 				},
 			},
 		},

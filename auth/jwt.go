@@ -12,29 +12,23 @@ const TOKEN_LIFETIME = time.Minute * 10
 
 const JWT_KEY = "secret_key"
 
-type tokenHeader struct {
-	Alg string
-	Typ string
-}
-
 type UserInfoPayload struct {
 	UserID   int64
 	FullName string
 }
 
 type TokenClaims struct {
-	*jwt.StandardClaims
+	*jwt.RegisteredClaims
 	*UserInfoPayload
 }
 
 func GenerateToken(u *user.User) (string, error) {
 	// Create the token
 	token := jwt.New(jwt.SigningMethodHS256)
-
 	// Set some claims
 	token.Claims = &TokenClaims{
-		&jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(TOKEN_LIFETIME).Unix(),
+		&jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TOKEN_LIFETIME)),
 		},
 		&UserInfoPayload{
 			int64(u.ID),

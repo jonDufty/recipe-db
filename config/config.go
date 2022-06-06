@@ -12,10 +12,10 @@ import (
 )
 
 type AppConfig struct {
-	AuthEndpoint    string           `envconfig:"auth_endpoint"`
-	GraphEndpoint   string           `envconfig:"graph_endpoint"`
-	RecipesEndpoint string           `envconfig:"recipes_endpoint"`
-	DB              *database.Config `envconfig:"database"`
+	AuthEndpoint     string           `envconfig:"auth_endpoint"`
+	GraphEndpoint    string           `envconfig:"graph_endpoint"`
+	CookbookEndpoint string           `envconfig:"cookbook_endpoint"`
+	DB               *database.Config `envconfig:"database"`
 }
 
 type AuthConfig struct {
@@ -24,6 +24,11 @@ type AuthConfig struct {
 }
 
 type CookbookConfig struct {
+	Port int `envconfig:"port" default:"80"`
+	AppConfig
+}
+
+type GraphConfig struct {
 	Port int `envconfig:"port" default:"80"`
 	AppConfig
 }
@@ -61,6 +66,26 @@ func NewCookbookConfig() *CookbookConfig {
 	}
 
 	err := LoadConfig(baseDir, "cookbook", config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return config
+}
+
+func NewGraphConfig() *GraphConfig {
+	config := &GraphConfig{}
+	baseDir := os.Getenv("BASE_DIR")
+
+	if baseDir == "" {
+		baseDir = "."
+	}
+
+	if err := LoadConfig(baseDir, "recipes", config); err != nil {
+		log.Fatal(err)
+	}
+
+	err := LoadConfig(baseDir, "graph", config)
 	if err != nil {
 		log.Fatal(err)
 	}

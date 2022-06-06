@@ -96,23 +96,8 @@ func TestGetRecipe(t *testing.T) {
 			require.Equal(tc, test.expected.Instructions, resp.Instructions)
 		})
 	}
-}
 
-func TestListRecipes(t *testing.T) {
-	testApp := newTestDB("test_list_recipes")
-	testApp.InitServers()
-
-	err := testApp.App.DB.Ping()
-	require.NoError(t, err)
-
-	testServer := httptest.NewServer(testApp.Http)
-
-	defer testServer.Close()
-	defer testApp.Closer()
-
-	client := rpc.NewCookbookProtobufClient(testServer.URL+"/cookbook", &http.Client{})
-
-	type testCase struct {
+	type listTestCase struct {
 		name        string
 		input       *rpc.ListRecipesRequest
 		expected    *rpc.RecipeList
@@ -132,7 +117,7 @@ func TestListRecipes(t *testing.T) {
 		},
 	}
 
-	testCases := []testCase{
+	listTestCases := []listTestCase{
 		{
 			"test list recipes",
 			&rpc.ListRecipesRequest{},
@@ -143,9 +128,9 @@ func TestListRecipes(t *testing.T) {
 		},
 	}
 
-	for _, test := range testCases {
+	for _, test := range listTestCases {
 		t.Run(test.name, func(tx *testing.T) {
-			resp, err := client.ListRecipes(testApp.App.Ctx, &rpc.ListRecipesRequest{})
+			resp, err := client.ListRecipes(testApp.App.Ctx, test.input)
 			require.NoError(t, err)
 
 			for idx, rec := range resp.Recipes {
@@ -154,5 +139,63 @@ func TestListRecipes(t *testing.T) {
 			}
 		})
 	}
-
 }
+
+// func TestListRecipes(t *testing.T) {
+// 	testApp := newTestDB("test_list_recipes")
+// 	testApp.InitServers()
+
+// 	err := testApp.App.DB.Ping()
+// 	require.NoError(t, err)
+
+// 	testServer := httptest.NewServer(testApp.Http)
+
+// 	defer testServer.Close()
+// 	defer testApp.Closer()
+
+// 	client := rpc.NewCookbookProtobufClient(testServer.URL+"/cookbook", &http.Client{})
+
+// 	type testCase struct {
+// 		name        string
+// 		input       *rpc.ListRecipesRequest
+// 		expected    *rpc.RecipeList
+// 		ShouldError bool
+// 	}
+
+// 	recipes := []*rpc.Recipe{
+// 		{
+// 			Id:          1,
+// 			Title:       "Test recipe 1",
+// 			Description: "A chicken curry",
+// 		},
+// 		{
+// 			Id:          2,
+// 			Title:       "Test recipe 2",
+// 			Description: "A lamb curry",
+// 		},
+// 	}
+
+// 	testCases := []testCase{
+// 		{
+// 			"test list recipes",
+// 			&rpc.ListRecipesRequest{},
+// 			&rpc.RecipeList{
+// 				Recipes: recipes,
+// 			},
+// 			false,
+// 		},
+// 	}
+
+// 	for _, test := range testCases {
+// 		t.Run(test.name, func(tx *testing.T) {
+// 			resp, err := client.ListRecipes(testApp.App.Ctx, test.input)
+// 			require.NoError(t, err)
+
+// 			for idx, rec := range resp.Recipes {
+// 				require.Equal(t, test.expected.Recipes[idx].Title, rec.Title)
+// 				require.Equal(t, test.expected.Recipes[idx].Description, rec.Description)
+// 			}
+// 		})
+// 	}
+
+// }
