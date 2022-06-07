@@ -42,3 +42,7 @@ func AuthMiddleware(client authpb.Auth) func(handler http.Handler) http.Handler 
 		return http.HandlerFunc(f)
 	}
 }
+
+func IsAuthFromContext(ctx context.Context) bool {
+	return ctx.Value(authenticatedKey).(bool)
+}
